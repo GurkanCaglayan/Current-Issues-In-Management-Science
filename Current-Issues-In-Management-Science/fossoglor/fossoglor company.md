@@ -76,6 +76,10 @@ Her hafta, 12 hafta boyunca:
 ### Talep
 
 - Normal dağılım: ortalama = ortalama haftalık talep, standart sapma = CV × ortalama.
+- **Neden normal dağılım (kitapçık 1.2):**
+  - Normal dağılımda ortalama ve standart sapma ayrı ayrı seçilebilir; böylece her ürünün CV'si ürün grubunun hikâyesine göre belirlenebildi (fason 0.1, yedek parçacı 0.45).
+  - Poisson dağılımında varyans = ortalama, yani CV = 1/√ortalama. CV'yi talep belirler, biz seçemeyiz: ürün 1 (ort. 10) için CV ≈ 0.32, ürün 8 (ort. 80) için CV ≈ 0.11 olurdu. Bu, hikâyenin tersidir: en düzenli ürün (fason) en oynak, en oynak ürün (yedek parça) en düzenli olurdu.
+  - Kitapçık sade Python istiyor. Normal dağılım Python'un `random` modülünde hazır (`random.gauss`); Poisson için ek kod veya kütüphane (ör. `numpy`) gerekir.
 - En yakın tam sayıya yuvarlanır, negatif çıkarsa 0 alınır.
 - Çekilişlerin yaklaşık %0.5'i negatif çıkıp 0'a çevriliyor, bu yüzden gerçekleşen ortalama talep çok az yukarı kayıyor (seed 5000, 160 000 çekiliş ile ölçüldü).
 
@@ -88,4 +92,7 @@ Her hafta, 12 hafta boyunca:
 ## Açık konular
 
 - [ ] Ürün 3–5 için hikâye kısa: talep ve maliyetlerin neden orta düzeyde olduğu yazılabilir.
+- [x] Neden normal dağılım (kitapçık 1.2) → "Talep" bölümü.
+- [ ] Başlangıç stoklarının gerekçesi.
+- [ ] Ortalama haftalık taleplerin (10, 20, ..., 80) gerekçesi.
 - [ ] Her sayı için kaynak (web araması, ders kitabı, sağduyu), kitapçık 1.1.
