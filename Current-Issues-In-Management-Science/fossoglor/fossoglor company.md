@@ -40,6 +40,51 @@ Bu dosya, `problem.md` B bölümündeki sayıların arkasındaki hikâyeyi topla
 - **Gecikme cezası düşük (20 $):** ceza bir ödeme değil, fırsat maliyetidir (kaybedilen gelecek satışlar). Rakipler rekabetçi fiyat verdiği için bu parçaların kâr marjı düşüktür. Fırsat maliyeti kaybedilen marja bağlıdır; marj düşükse müşteriyi kaybetmenin bedeli de düşüktür.
 - **Stok maliyeti düşük (2 $):** sözleşmeden gelen ek sigorta ve bakım şartı yoktur.
 
+## Simülasyon modeli
+
+Kod `fossoglor/` klasöründe:
+
+| Dosya | İçinde ne var |
+|---|---|
+| `parameters.py` | Bütün sayılar (talep, CV, süreler, maliyetler, başlangıç stoku, 120 saat, 12 hafta) |
+| `basic_rule.py` | Basit başlangıç kuralı (`simple_rule`): stoğa bakıp bu haftanın üretimini verir |
+| `simulator.py` | Talep çekme (`draw_demand`), 12 haftalık bir run, 100 run |
+
+### Bir haftanın akışı
+
+Her hafta, 12 hafta boyunca:
+
+1. **Pazartesi, karar:** `simple_rule` haftanın başındaki stoğa bakar ve 8 ürünün üretim miktarını verir.
+2. **Üretim:** üretilen adet stoğa eklenir. Bu hafta üretilen parça bu hafta satılabilir (Tempelmeier 2013, CLSP varsayımı).
+3. **Talep:** her ürün için talep çekilir ve stoktan düşülür.
+4. **Backlog:** stok eksiye düşerse eksi kısım bekleyen siparişlerdir. Siparişler iptal edilmez, bir sonraki haftaya taşınır ve ilk üretimle kapanır.
+5. **Hafta sonu maliyeti:**
+   - **Setup:** bir ürün bu hafta üretildiyse (üretim > 0) o ürünün setup maliyeti. Üretim 0 ise setup da yok.
+   - **Stok maliyeti:** hafta sonu stoğu > 0 ise stok × o ürünün stok maliyeti. Üretilen adete değil, hafta sonunda depoda kalan adede uygulanır.
+   - **Gecikme cezası:** hafta sonu stoğu < 0 ise bekleyen sipariş sayısı × ceza. Sipariş kapanana kadar her hafta yeniden ceza ödenir ("penalty for every week it waits").
+
+12 haftanın maliyetlerinin toplamı = 1 run.
+
+### Basit kuralın ayrıntıları
+
+- Aday ürün: stok < ortalama haftalık talep.
+- Sıra: en az stoklu önce.
+- Üretim miktarı: 3 × ortalama haftalık talep − stok. Stok eksiyse bekleyen siparişler de bu miktara girer.
+- Saat tam üretime yetmezse **kısmi üretim:** setup yapılır, kalan saatle üretilebilecek kadar üretilir, adet aşağı yuvarlanır. Sonra o haftanın üretimi biter.
+- Kalan saat setup + 1 adete bile yetmiyorsa o hafta üretim durur, sonraki adaylara bakılmaz. Şu an bütün ürünlerin setup süresi aynı olduğu için bunun bir etkisi yok. Setup süreleri farklılaşırsa, setup'ı daha kısa olan bir sonraki ürün sığabileceği halde atlanmış olur.
+
+### Talep
+
+- Normal dağılım: ortalama = ortalama haftalık talep, standart sapma = CV × ortalama.
+- En yakın tam sayıya yuvarlanır, negatif çıkarsa 0 alınır.
+- Çekilişlerin yaklaşık %0.5'i negatif çıkıp 0'a çevriliyor, bu yüzden gerçekleşen ortalama talep çok az yukarı kayıyor (seed 5000, 160 000 çekiliş ile ölçüldü).
+
+### Deney
+
+- Raporlanan sonuçlar: 100 run, her run'dan önce `random.seed(k)`, k = 1, ..., 100 (kitapçık 1.3).
+- Deneme ve ayar için seed 1000 ve üstü.
+- Hesaplama süresi: 100 run'ın toplam süresi, `time.time()` ile ölçülür.
+
 ## Açık konular
 
 - [ ] Ürün 3–5 için hikâye kısa: talep ve maliyetlerin neden orta düzeyde olduğu yazılabilir.
