@@ -14,7 +14,8 @@ Proje yöntemlerini gerçekten anlamak için çalışma alanı:
 
 | Klasör | Amacı |
 |---|---|
-| `karar-analizi/` | Karar Analizi dersi (DP) ve ders notu. |
+| `prerequisite-karar-analizi/` | Önkoşul Karar Analizi dersi (DP) ve ders notu. |
+| `Current-Issues-In-Management-Science/` | Güncel ders MAN403: ders slaytları ve konu çalışmaları. |
 
 Yeni konu klasörlerini ben açarım.
 
